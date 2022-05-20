@@ -7,3 +7,35 @@ services:
     ports:
       - 80:80
       - 443:443
+    networks:
+      - lamp
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - "./db:/docker-entrypoint-initdb.d"
+    networks:
+      - lamp
+
+  phpmyadmin:
+    image:  phpmyadmin/phpmyadmin
+    ports:
+      - 9090:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+    networks:
+      - lamp
+    depends_on:
+      - db
+
+networks:
+  lamp:
+    driver: bridge
